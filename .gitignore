@@ -426,3 +426,9 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+# Build output
+dist/
+
+# Local environment variables
+.env.local
+.env.*.local
