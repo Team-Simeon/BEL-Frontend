@@ -3,9 +3,13 @@ import type { FormEvent } from "react";
 import {
   FEEDBACK_MAX_LENGTH,
   FEEDBACK_MIN_LENGTH,
+  FeedbackRequestError,
   submitFeedback,
 } from "../services/feedbackApi";
-import type { FeedbackType } from "../services/feedbackApi";
+import type {
+  FeedbackFieldErrors,
+  FeedbackType,
+} from "../services/feedbackApi";
 import "./FeedbackPage.css";
 
 type Status = "idle" | "sending" | "success" | "error";
@@ -32,12 +36,23 @@ export default function FeedbackPage() {
   const [submitted, setSubmitted] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [serverError, setServerError] = useState<string | null>(null);
+  // Field errors returned by the backend in a 400 response.
+  const [serverFieldErrors, setServerFieldErrors] =
+    useState<FeedbackFieldErrors>({});
 
   const isSending = status === "sending";
   const isOverLimit = message.length > FEEDBACK_MAX_LENGTH;
+  const messageError = fieldError ?? serverFieldErrors.message ?? null;
+  const typeError = serverFieldErrors.type ?? null;
+
+  function handleTypeChange(value: FeedbackType) {
+    setType(value);
+    setServerFieldErrors(({ type: _removed, ...rest }) => rest);
+  }
 
   function handleMessageChange(value: string) {
     setMessage(value);
+    setServerFieldErrors(({ message: _removed, ...rest }) => rest);
     if (status === "success") setStatus("idle");
     // After the first submit attempt, keep the error up to date while typing.
     if (submitted) setFieldError(validateMessage(value));
@@ -54,6 +69,7 @@ export default function FeedbackPage() {
 
     setStatus("sending");
     setServerError(null);
+    setServerFieldErrors({});
 
     try {
       await submitFeedback({ type, message: message.trim() });
@@ -61,6 +77,15 @@ export default function FeedbackPage() {
       setMessage("");
       setSubmitted(false);
     } catch (err) {
+      if (
+        err instanceof FeedbackRequestError &&
+        Object.keys(err.fieldErrors).length > 0
+      ) {
+        // Shown under the fields themselves, no general error box.
+        setServerFieldErrors(err.fieldErrors);
+        setStatus("idle");
+        return;
+      }
       setStatus("error");
       setServerError(
         err instanceof Error ? err.message : "Възникна неочаквана грешка.",
@@ -77,29 +102,39 @@ export default function FeedbackPage() {
       </p>
 
       <form className="feedback-form" onSubmit={handleSubmit} noValidate>
-        <fieldset className="feedback-type" disabled={isSending}>
-          <legend>Тип</legend>
-          <label>
-            <input
-              type="radio"
-              name="type"
-              value="Problem"
-              checked={type === "Problem"}
-              onChange={() => setType("Problem")}
-            />
-            Проблем
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="type"
-              value="Suggestion"
-              checked={type === "Suggestion"}
-              onChange={() => setType("Suggestion")}
-            />
-            Предложение
-          </label>
-        </fieldset>
+        <div className="feedback-field">
+          <fieldset
+            className="feedback-type"
+            disabled={isSending}
+            aria-invalid={typeError ? true : undefined}
+            aria-describedby="feedback-type-error"
+          >
+            <legend>Тип</legend>
+            <label>
+              <input
+                type="radio"
+                name="type"
+                value="Problem"
+                checked={type === "Problem"}
+                onChange={() => handleTypeChange("Problem")}
+              />
+              Проблем
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="type"
+                value="Suggestion"
+                checked={type === "Suggestion"}
+                onChange={() => handleTypeChange("Suggestion")}
+              />
+              Предложение
+            </label>
+          </fieldset>
+          <p id="feedback-type-error" className="feedback-error" role="alert">
+            {typeError}
+          </p>
+        </div>
 
         <div className="feedback-field">
           <label htmlFor="feedback-message">Съобщение</label>
@@ -109,12 +144,12 @@ export default function FeedbackPage() {
             value={message}
             onChange={(e) => handleMessageChange(e.target.value)}
             disabled={isSending}
-            aria-invalid={fieldError ? true : undefined}
+            aria-invalid={messageError ? true : undefined}
             aria-describedby="feedback-counter feedback-error"
           />
           <div className="feedback-field-footer">
             <p id="feedback-error" className="feedback-error" role="alert">
-              {fieldError}
+              {messageError}
             </p>
             <span
               id="feedback-counter"
@@ -127,7 +162,9 @@ export default function FeedbackPage() {
         </div>
 
         <button type="submit" className="feedback-submit" disabled={isSending}>
-          {isSending && <span className="feedback-spinner" aria-hidden="true" />}
+          {isSending && (
+            <span className="feedback-spinner" aria-hidden="true" />
+          )}
           {isSending ? "Изпращане..." : "Изпрати"}
         </button>
 
