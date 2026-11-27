@@ -1,4 +1,5 @@
-export type FeedbackType = "problem" | "suggestion";
+// Must match the backend contract of POST /api/feedback exactly.
+export type FeedbackType = "Problem" | "Suggestion";
 
 export type FeedbackPayload = {
   type: FeedbackType;
@@ -7,7 +8,9 @@ export type FeedbackPayload = {
 
 export type FeedbackResponse = {
   id: string;
-  createdAt: string;
+  type: FeedbackType;
+  message: string;
+  createdAtUtc: string;
 };
 
 export const FEEDBACK_MIN_LENGTH = 10;
@@ -36,7 +39,9 @@ export function submitFeedback(
 
       resolve({
         id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
+        type: payload.type,
+        message: payload.message,
+        createdAtUtc: new Date().toISOString(),
       });
       console.info("[mock] feedback sent", payload);
     }, MOCK_DELAY_MS);

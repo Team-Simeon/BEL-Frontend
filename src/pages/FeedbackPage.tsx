@@ -26,7 +26,7 @@ function validateMessage(message: string): string | null {
 }
 
 export default function FeedbackPage() {
-  const [type, setType] = useState<FeedbackType>("problem");
+  const [type, setType] = useState<FeedbackType>("Problem");
   const [message, setMessage] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -83,9 +83,9 @@ export default function FeedbackPage() {
             <input
               type="radio"
               name="type"
-              value="problem"
-              checked={type === "problem"}
-              onChange={() => setType("problem")}
+              value="Problem"
+              checked={type === "Problem"}
+              onChange={() => setType("Problem")}
             />
             Проблем
           </label>
@@ -93,9 +93,9 @@ export default function FeedbackPage() {
             <input
               type="radio"
               name="type"
-              value="suggestion"
-              checked={type === "suggestion"}
-              onChange={() => setType("suggestion")}
+              value="Suggestion"
+              checked={type === "Suggestion"}
+              onChange={() => setType("Suggestion")}
             />
             Предложение
           </label>
