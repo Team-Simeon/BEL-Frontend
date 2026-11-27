@@ -88,6 +88,10 @@
   color: #dc2626;
 }
 
+.feedback-field > .feedback-error {
+  font-size: 15px;
+}
+
 .feedback-counter {
   margin-left: auto;
   white-space: nowrap;
