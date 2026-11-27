@@ -1,0 +1,161 @@
+.feedback-page {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 20px 48px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.feedback-page h1 {
+  text-align: center;
+}
+
+.feedback-intro {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feedback-type {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.feedback-type legend {
+  padding: 0 6px;
+  color: var(--text-h);
+}
+
+.feedback-type label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.feedback-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feedback-field > label {
+  color: var(--text-h);
+}
+
+.feedback-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  font: inherit;
+  color: var(--text-h);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.feedback-field textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.feedback-field textarea[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+.feedback-field-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 1.5em;
+  font-size: 15px;
+}
+
+.feedback-error {
+  color: #dc2626;
+}
+
+.feedback-counter {
+  margin-left: auto;
+  white-space: nowrap;
+  font-family: var(--mono);
+}
+
+.feedback-counter.is-over {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.feedback-submit {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  font: inherit;
+  border: none;
+  border-radius: 8px;
+  background: #6750a4;
+  color: white;
+  cursor: pointer;
+}
+
+.feedback-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.feedback-submit:focus-visible {
+  outline: 3px solid #6750a4;
+  outline-offset: 3px;
+}
+
+.feedback-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.feedback-status {
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+.feedback-status.is-success {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.feedback-status.is-error {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+@media (max-width: 600px) {
+  .feedback-submit {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-spinner {
+    animation: none;
+  }
+}
